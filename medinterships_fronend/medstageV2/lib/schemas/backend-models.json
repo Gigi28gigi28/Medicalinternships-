@@ -1,0 +1,158 @@
+{
+  "models": {
+    "User": {
+      "attributes": {
+        "id": "UUID",
+        "email": "string",
+        "password_hash": "string",
+        "role": "enum: STUDENT | PERSONNEL | CHIEF | DOCTOR | ADMIN",
+        "is_active": "boolean",
+        "last_login": "datetime",
+        "created_at": "datetime",
+        "updated_at": "datetime"
+      }
+    },
+    "Student": {
+      "attributes": {
+        "id": "UUID",
+        "user_id": "UUID (FK)",
+        "matricule": "string",
+        "first_name": "string",
+        "last_name": "string",
+        "phone": "string",
+        "level": "enum: L2 | L3 | M1 | M2",
+        "specialty": "string",
+        "university": "string",
+        "batch": "string",
+        "cv_file_url": "string",
+        "profile_photo_url": "string",
+        "created_at": "datetime",
+        "updated_at": "datetime"
+      },
+      "relations": ["User (1:1)", "Applications (1:N)", "Evaluations (1:N)"]
+    },
+    "Establishment": {
+      "attributes": {
+        "id": "UUID",
+        "name": "string",
+        "type": "enum: HOSPITAL | CLINIC | RESEARCH_CENTER",
+        "address": "string",
+        "city": "string",
+        "wilaya": "string",
+        "phone": "string",
+        "email": "string",
+        "website": "string",
+        "principal_chief_id": "UUID (FK nullable)",
+        "is_verified": "boolean",
+        "created_at": "datetime",
+        "updated_at": "datetime"
+      },
+      "relations": ["Departments (1:N)", "Internships (1:N)", "Personnel (1:N)"]
+    },
+    "Department": {
+      "attributes": {
+        "id": "UUID",
+        "establishment_id": "UUID (FK)",
+        "name": "string",
+        "description": "string",
+        "chief_doctor_id": "UUID (FK nullable)",
+        "created_at": "datetime",
+        "updated_at": "datetime"
+      },
+      "relations": ["Establishment (N:1)", "Internships (1:N)"]
+    },
+    "Internship": {
+      "attributes": {
+        "id": "UUID",
+        "establishment_id": "UUID (FK)",
+        "department_id": "UUID (FK)",
+        "title": "string",
+        "description": "text",
+        "duration_weeks": "integer",
+        "available_places": "integer",
+        "filled_places": "integer",
+        "start_date": "date",
+        "end_date": "date",
+        "requirements": "text",
+        "supervisor_id": "UUID (FK nullable)",
+        "is_active": "boolean",
+        "created_at": "datetime",
+        "updated_at": "datetime"
+      },
+      "relations": ["Establishment (N:1)", "Department (N:1)", "Applications (1:N)"]
+    },
+    "Application": {
+      "attributes": {
+        "id": "UUID",
+        "student_id": "UUID (FK)",
+        "internship_id": "UUID (FK)",
+        "status": "enum: PENDING | ACCEPTED | REJECTED | WITHDRAWN",
+        "applied_at": "datetime",
+        "reviewed_at": "datetime nullable",
+        "rejection_reason": "text nullable",
+        "created_at": "datetime",
+        "updated_at": "datetime"
+      },
+      "relations": ["Student (N:1)", "Internship (N:1)", "Evaluations (1:N)"]
+    },
+    "Evaluation": {
+      "attributes": {
+        "id": "UUID",
+        "application_id": "UUID (FK)",
+        "student_id": "UUID (FK)",
+        "evaluator_id": "UUID (FK)",
+        "score": "float (0-20)",
+        "comments": "text",
+        "attendance_rate": "float (0-100)",
+        "evaluation_date": "date",
+        "status": "enum: PENDING | COMPLETED | ARCHIVED",
+        "created_at": "datetime",
+        "updated_at": "datetime"
+      },
+      "relations": ["Application (N:1)", "Student (N:1)", "Personnel (N:1)"]
+    },
+    "Personnel": {
+      "attributes": {
+        "id": "UUID",
+        "user_id": "UUID (FK)",
+        "establishment_id": "UUID (FK)",
+        "first_name": "string",
+        "last_name": "string",
+        "phone": "string",
+        "position": "string",
+        "role": "enum: CHIEF | DOCTOR | SUPERVISOR",
+        "department_id": "UUID (FK nullable)",
+        "created_at": "datetime",
+        "updated_at": "datetime"
+      },
+      "relations": ["User (1:1)", "Establishment (N:1)", "Evaluations (1:N)"]
+    },
+    "Notification": {
+      "attributes": {
+        "id": "UUID",
+        "user_id": "UUID (FK)",
+        "title": "string",
+        "message": "text",
+        "type": "enum: APPLICATION_STATUS | EVALUATION | SYSTEM | MESSAGE",
+        "is_read": "boolean",
+        "action_url": "string nullable",
+        "created_at": "datetime"
+      },
+      "relations": ["User (N:1)"]
+    },
+    "Document": {
+      "attributes": {
+        "id": "UUID",
+        "student_id": "UUID (FK)",
+        "file_name": "string",
+        "file_type": "string",
+        "file_url": "string",
+        "file_size": "integer",
+        "document_type": "enum: TRANSCRIPT | CERTIFICATE | CV | OTHER",
+        "uploaded_at": "datetime",
+        "created_at": "datetime"
+      },
+      "relations": ["Student (N:1)"]
+    }
+  }
+}

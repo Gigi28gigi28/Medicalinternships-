@@ -1,0 +1,254 @@
+{
+  "entities": {
+    "Student": {
+      "id": "UUID (Primary Key)",
+      "firstName": "string (required)",
+      "lastName": "string (required)",
+      "email": "string (unique, required)",
+      "password": "string (hashed, required)",
+      "phone": "string",
+      "level": "enum: ['2ème année', '3ème année', '4ème année', '5ème année', '6ème année']",
+      "specialty": "string",
+      "profilePhoto": "string (URL/path)",
+      "registrationDate": "timestamp",
+      "isActive": "boolean (default: true)",
+      "createdAt": "timestamp",
+      "updatedAt": "timestamp"
+    },
+
+    "Establishment": {
+      "id": "UUID (Primary Key)",
+      "name": "string (required, unique)",
+      "city": "string (required)",
+      "address": "string",
+      "phone": "string",
+      "email": "string",
+      "website": "string",
+      "type": "enum: ['CHU', 'Clinique', 'Hôpital', 'Polyclinique']",
+      "departments": "integer (number of departments)",
+      "totalStudents": "integer",
+      "isActive": "boolean (default: true)",
+      "createdAt": "timestamp",
+      "updatedAt": "timestamp"
+    },
+
+    "Department": {
+      "id": "UUID (Primary Key)",
+      "name": "string (required)",
+      "description": "text",
+      "establishmentId": "UUID (Foreign Key -> Establishment)",
+      "chiefId": "UUID (Foreign Key -> User/Chief)",
+      "totalPlaces": "integer",
+      "availablePlaces": "integer",
+      "createdAt": "timestamp",
+      "updatedAt": "timestamp"
+    },
+
+    "Internship": {
+      "id": "UUID (Primary Key)",
+      "title": "string (required)",
+      "description": "text",
+      "departmentId": "UUID (Foreign Key -> Department)",
+      "establishmentId": "UUID (Foreign Key -> Establishment)",
+      "totalPlaces": "integer (required)",
+      "filledPlaces": "integer (default: 0)",
+      "duration": "string (e.g., '4 semaines', '6 semaines')",
+      "startDate": "date (required)",
+      "endDate": "date (required)",
+      "requirements": "text",
+      "status": "enum: ['Actif', 'Complet', 'Archivé', 'Clôturé']",
+      "createdBy": "UUID (Foreign Key -> User/Chief)",
+      "createdAt": "timestamp",
+      "updatedAt": "timestamp"
+    },
+
+    "Application": {
+      "id": "UUID (Primary Key)",
+      "studentId": "UUID (Foreign Key -> Student, required)",
+      "internshipId": "UUID (Foreign Key -> Internship, required)",
+      "status": "enum: ['En attente', 'Acceptée', 'Refusée', 'Annulée']",
+      "appliedDate": "date (required)",
+      "startDate": "date",
+      "departmentTitle": "string",
+      "hospital": "string",
+      "motivationLetter": "text",
+      "cv": "string (URL/path to file)",
+      "responseDate": "date",
+      "rejectionReason": "text",
+      "createdAt": "timestamp",
+      "updatedAt": "timestamp"
+    },
+
+    "Evaluation": {
+      "id": "UUID (Primary Key)",
+      "studentId": "UUID (Foreign Key -> Student, required)",
+      "internshipId": "UUID (Foreign Key -> Internship, required)",
+      "doctorId": "UUID (Foreign Key -> User/Doctor, required)",
+      "status": "enum: ['En attente', 'En cours', 'Soumise']",
+      "startDate": "date",
+      "dueDate": "date",
+      "submissionDate": "date",
+      "score": "integer (0-100)",
+      "comments": "text",
+      "evaluationForm": "JSON (flexible form data)",
+      "createdAt": "timestamp",
+      "updatedAt": "timestamp"
+    },
+
+    "User": {
+      "id": "UUID (Primary Key)",
+      "email": "string (unique, required)",
+      "password": "string (hashed, required)",
+      "role": "enum: ['student', 'chief', 'doctor', 'admin']",
+      "firstName": "string",
+      "lastName": "string",
+      "phone": "string",
+      "profilePhoto": "string (URL/path)",
+      "establishmentId": "UUID (Foreign Key -> Establishment, nullable)",
+      "departmentId": "UUID (Foreign Key -> Department, nullable)",
+      "isActive": "boolean (default: true)",
+      "lastLogin": "timestamp",
+      "createdAt": "timestamp",
+      "updatedAt": "timestamp"
+    },
+
+    "Notification": {
+      "id": "UUID (Primary Key)",
+      "userId": "UUID (Foreign Key -> User, required)",
+      "type": "enum: ['success', 'warning', 'error', 'info']",
+      "title": "string",
+      "message": "string (required)",
+      "relatedEntityType": "string (e.g., 'Application', 'Internship')",
+      "relatedEntityId": "UUID",
+      "isRead": "boolean (default: false)",
+      "createdAt": "timestamp",
+      "readAt": "timestamp (nullable)"
+    },
+
+    "Document": {
+      "id": "UUID (Primary Key)",
+      "studentId": "UUID (Foreign Key -> Student, required)",
+      "name": "string (required)",
+      "fileUrl": "string (required)",
+      "fileSize": "integer (in bytes)",
+      "mimeType": "string",
+      "uploadedDate": "date",
+      "createdAt": "timestamp",
+      "updatedAt": "timestamp"
+    },
+
+    "Admin": {
+      "id": "UUID (Primary Key)",
+      "userId": "UUID (Foreign Key -> User, required)",
+      "permissions": "array of strings",
+      "createdAt": "timestamp",
+      "updatedAt": "timestamp"
+    }
+  },
+
+  "relationships": {
+    "Student-Application": "One-to-Many (1 Student -> Many Applications)",
+    "Student-Evaluation": "One-to-Many (1 Student -> Many Evaluations)",
+    "Student-Document": "One-to-Many (1 Student -> Many Documents)",
+    "Establishment-Department": "One-to-Many (1 Establishment -> Many Departments)",
+    "Establishment-Internship": "One-to-Many (1 Establishment -> Many Internships)",
+    "Department-Internship": "One-to-Many (1 Department -> Many Internships)",
+    "Internship-Application": "One-to-Many (1 Internship -> Many Applications)",
+    "Internship-Evaluation": "One-to-Many (1 Internship -> Many Evaluations)",
+    "User-Department": "Many-to-One (Many Users -> 1 Department for Chiefs/Doctors)",
+    "User-Establishment": "Many-to-One (Many Users -> 1 Establishment)",
+    "Doctor-Evaluation": "One-to-Many (1 Doctor -> Many Evaluations)"
+  },
+
+  "enums": {
+    "StudentLevel": ["2ème année", "3ème année", "4ème année", "5ème année", "6ème année"],
+    "EstablishmentType": ["CHU", "Clinique", "Hôpital", "Polyclinique"],
+    "InternshipStatus": ["Actif", "Complet", "Archivé", "Clôturé"],
+    "ApplicationStatus": ["En attente", "Acceptée", "Refusée", "Annulée"],
+    "EvaluationStatus": ["En attente", "En cours", "Soumise"],
+    "UserRole": ["student", "chief", "doctor", "admin"],
+    "NotificationType": ["success", "warning", "error", "info"]
+  },
+
+  "api_endpoints": {
+    "authentication": {
+      "POST /auth/student-login": "{ email, password } -> { token, user }",
+      "POST /auth/student-register": "{ firstName, lastName, email, password, phone, level, specialty } -> { user, token }",
+      "POST /auth/personnel-login": "{ email, password } -> { token, user }",
+      "POST /auth/logout": "{ } -> { success }",
+      "POST /auth/refresh": "{ refreshToken } -> { token }"
+    },
+    "students": {
+      "GET /students/:id": "Get student profile",
+      "PUT /students/:id": "Update student profile",
+      "GET /students/:id/documents": "List student documents",
+      "POST /students/:id/documents": "Upload document",
+      "DELETE /students/:id/documents/:docId": "Delete document"
+    },
+    "establishments": {
+      "GET /establishments": "List all establishments",
+      "GET /establishments/:id": "Get establishment details",
+      "POST /establishments": "Create establishment (admin only)",
+      "PUT /establishments/:id": "Update establishment (admin only)",
+      "DELETE /establishments/:id": "Delete establishment (admin only)"
+    },
+    "departments": {
+      "GET /establishments/:id/departments": "List departments by establishment",
+      "GET /departments/:id": "Get department details",
+      "POST /departments": "Create department (chief only)",
+      "PUT /departments/:id": "Update department",
+      "DELETE /departments/:id": "Delete department"
+    },
+    "internships": {
+      "GET /internships": "List all internships",
+      "GET /internships/:id": "Get internship details",
+      "GET /internships/search": "Search internships (filters: department, city, date)",
+      "GET /internships/available": "Get available internships",
+      "POST /internships": "Create internship (chief only)",
+      "PUT /internships/:id": "Update internship",
+      "DELETE /internships/:id": "Delete internship",
+      "PATCH /internships/:id/close": "Close internship"
+    },
+    "applications": {
+      "GET /applications": "List applications (user-specific)",
+      "GET /applications/:id": "Get application details",
+      "POST /applications": "Submit application",
+      "PUT /applications/:id": "Update application",
+      "PATCH /applications/:id/status": "Update application status (accept/reject)",
+      "DELETE /applications/:id": "Cancel application"
+    },
+    "evaluations": {
+      "GET /evaluations": "List evaluations (user-specific)",
+      "GET /evaluations/:id": "Get evaluation details",
+      "POST /evaluations": "Create evaluation",
+      "PUT /evaluations/:id": "Update evaluation",
+      "PATCH /evaluations/:id/submit": "Submit evaluation",
+      "GET /internships/:internshipId/evaluations": "List evaluations for internship"
+    },
+    "notifications": {
+      "GET /notifications": "List user notifications",
+      "GET /notifications/unread": "Get unread notifications count",
+      "PATCH /notifications/:id/read": "Mark notification as read",
+      "DELETE /notifications/:id": "Delete notification"
+    },
+    "dashboard": {
+      "GET /dashboard/student": "Student dashboard data",
+      "GET /dashboard/chief": "Chief dashboard data",
+      "GET /dashboard/doctor": "Doctor dashboard data",
+      "GET /dashboard/admin": "Admin dashboard data",
+      "GET /dashboard/admin/statistics": "System statistics"
+    }
+  },
+
+  "sample_data_creation_order": [
+    "1. User (for authentication)",
+    "2. Student (extends User)",
+    "3. Establishment (hospitals/clinics)",
+    "4. Department (departments within establishments)",
+    "5. Internship (internship offers)",
+    "6. Application (student applications)",
+    "7. Evaluation (internship evaluations)",
+    "8. Document (student documents)",
+    "9. Notification (system notifications)"
+  ]
+}
