@@ -9,8 +9,8 @@ const options = {
       version: '1.0.0',
       description: 'API documentation for Medical Internships Management System',
       contact: {
-        name: 'Zarifi mohamed abdelhadi',
-        email: 'mohamezarifi@gmail.com',
+        name: 'hadjer silmi',
+        email: 'hadjersilmi28@gmail.com',
       },
     },
     servers: [
